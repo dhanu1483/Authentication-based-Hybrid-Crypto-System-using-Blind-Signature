@@ -1,0 +1,135 @@
+
+package com.mycompany.hybridcryptobs;
+import java.io.*;
+import java.math.BigInteger;
+import java.util.Random;
+
+public class HybridcryptoBS
+{
+public static void main(String[] args)throws IOException
+     { 
+         
+         //****KGS Start
+long startTime1=System.currentTimeMillis();
+long total1 = 0; 
+for (int i1 = 0; i1 < 10000000; i1++) total1 += i1;
+
+         BigInteger N,piN,d;
+         BigInteger one=new BigInteger("1");
+         BigInteger pi,qi,ei;
+int bitLength = 1024; // INPUT bit length of primes P and Q; 
+
+Random rnd = new Random(); // create a random object
+pi = BigInteger.probablePrime(bitLength, rnd); 
+qi = BigInteger.probablePrime(bitLength, rnd);
+ei = BigInteger.probablePrime(bitLength, rnd); // Assigns probable Prime to p,q,e using bitLength and rnd
+
+         BigInteger M=new BigInteger("16");  //Original message
+         
+       //  BigInteger a=new BigInteger("21");
+//BigInteger b=new BigInteger("12");
+
+BigInteger M1=pi.multiply(qi).subtract(pi); //M=A*B-P
+BigInteger E=M1.add(pi);//E=M+A
+BigInteger D=M1.add(qi);//E=M+B
+
+BigInteger N1=((E.multiply(D)).subtract(pi)).divide(M1);//N=ED-P/M
+BigInteger Q=pi.modInverse(N1); 
+//System.out.println("Q: " +Q);
+
+   
+long stopTime1 = System.currentTimeMillis();       
+long elapsedTime1 = stopTime1 - startTime1;
+ System.out.println("KGS time:");      
+ System.out.println(elapsedTime1);  
+
+//Encryption 
+long startTime2 = System.currentTimeMillis();
+long total2 = 0; 
+for (int i2 = 0; i2 < 10000000; i2++) total1 += i2;
+
+//Input Message
+BigInteger m1=new BigInteger("3");
+BigInteger m2=new BigInteger("5");
+
+//Encryption 
+BigInteger CT1=(m1.multiply(D)).mod(N1);//CT=M*D MOD N
+BigInteger CT2=(m2.multiply(D)).mod(N1); 
+//System.out.println("CT1: " +CT1);
+//System.out.println("CT2: " +CT2);
+
+long stopTime2 = System.currentTimeMillis(); 
+long elapsedTime2 = stopTime2 - startTime2;
+System.out.println("Encryption time:"); 
+System.out.println(elapsedTime2);
+//Encryption end
+
+//Decryption
+long startTime3 = System.currentTimeMillis(); long total3 = 0; 
+for (int i3 = 0; i3 < 10000000; i3++) total1 += i3; 
+
+//Decryption
+BigInteger DT1=(Q.multiply(E).multiply(CT1)).mod(N1); //DT = CT*E*Q MOD N
+BigInteger DT2=(Q.multiply(E).multiply(CT2)).mod(N1); 
+System.out.println("DT1:"+DT1);
+System.out.println("DT2:"+DT2);
+         
+N=pi.multiply(qi); //N=P*Q
+piN=(pi.subtract(one)).multiply(qi.subtract(one));//PI(N) =(P-1)*(Q-1)
+d=ei.modInverse(piN);//D=E INVERSE PI(N)
+//System.out.println("Private Key:"+d);
+BigInteger CT;
+//CT=M.modPow(e,N);
+//System.out.println("Message:"+M);
+//System.out.println("Cipher Text:"+CT);
+//BigInteger DT;
+//DT=CT.modPow(d,N);
+//System.out.println("Decipher Text:"+DT);
+
+ 
+
+BigInteger r=new BigInteger("5"); 
+//Blind Factor r^e MOD N
+BigInteger X; 
+X=(r.modPow(ei,N)).mod(N); //
+//Blinded Message
+BigInteger XM;
+XM=(X.multiply(M)).mod(N); //BM = (BF*M) MOD N
+//System.out.println("Blinded Message XM:"+XM);
+
+ long stopTime3 = System.currentTimeMillis(); 
+ long elapsedTime3 = stopTime3 - startTime3;
+ System.out.println("Blinded Message time:");
+ System.out.println(elapsedTime3);
+
+ 
+ 
+//Sign Generation
+long startTime4 = System.currentTimeMillis(); 
+long total4 = 0;
+for (int i4 = 0; i4 < 10000000; i4++) total1 += i4; 
+BigInteger s; s=XM.modPow(d,N); //S =  BM^d MOD N
+//System.out.println("Signed value s:"+s);
+long stopTime4 = System.currentTimeMillis();
+long elapsedTime4 = stopTime4 - startTime4;
+System.out.println("Sing Generation time:");
+System.out.println(elapsedTime4);
+ 
+
+long startTime5 = System.currentTimeMillis(); 
+long total5 = 0; 
+for (int i5 = 0; i5 < 10000000; i5++) total1 += i5; 
+//Sign verification
+
+BigInteger t1,t; 
+t1=(r.modInverse(N));
+//System.out.println("r inverse: "+t1);
+t=((r.modInverse(N)).multiply(s)).modPow(ei,N);//M'=S*R^-MOD N
+System.out.println("True sign t:"+t);
+
+long stopTime5 = System.currentTimeMillis(); 
+long elapsedTime5 = stopTime5 - startTime5;
+System.out.println("Blind verification time:");
+System.out.println(elapsedTime5);
+    }
+}
